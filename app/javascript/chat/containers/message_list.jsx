@@ -6,34 +6,47 @@ import { fetchMessages, appendMessage } from '../actions';
 import Message from '../components/message';
 import MessageForm from '../containers/message_form';
 
-import consumer from "../../channels/consumer"
-import subscribeActionCable from "../../channels/channels_channel.js"
 
 class MessageList extends Component {
+
+  fetchMessages = () => {
+    this.props.fetchMessages(this.props.selectedChannel);
+  }
+
+  appendMessage = (message) => {
+    this.props.appendMessage(message);
+  }
+
+  subscribeActionCable(props) {
+    props.fetchMessages(props.selectedChannel)
+
+    props.CableApp.cable.channel =
+    props.CableApp.cable.subscriptions.create({ channel: 'ChannelsChannel', room: `channel_${props.selectedChannel}` },
+    {
+      received(message) {
+        if (message.channel === props.selectedChannel) {
+          this.appendMessage(message);
+        }
+      }
+    })
+  }
+
   componentWillMount() {
     this.fetchMessages();
   }
 
   componentDidMount() {
-    subscribeActionCable(this.props);
+    this.subscribeActionCable(this.props);
   }
 
   componentWillReceiveProps(nextProps) { // For after switching channels
     if (this.props.selectedChannel != nextProps.selectedChannel) {
-      subscribeActionCable(nextProps);
+      this.subscribeActionCable(nextProps);
     }
   }
 
   componentDidUpdate() {
     this.list.scrollTop = this.list.scrollHeight;
-  }
-
-  componentWillUnmount() {
-    // clearInterval(this.refresher);
-  }
-
-  fetchMessages = () => {
-    this.props.fetchMessages(this.props.selectedChannel);
   }
 
   render () {
@@ -62,7 +75,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchMessages }, dispatch);
+  return bindActionCreators({ fetchMessages, appendMessage }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessageList);

@@ -1,4 +1,4 @@
-import { FETCH_MESSAGES, MESSAGE_POSTED, CHANNEL_SELECTED } from '../actions';
+import { FETCH_MESSAGES, MESSAGE_POSTED, CHANNEL_SELECTED, APPEND_MESSAGE } from '../actions';
 
 export default function(state = null, action) {
   switch (action.type) {
@@ -8,7 +8,11 @@ export default function(state = null, action) {
     case MESSAGE_POSTED: {
       const copiedState = state.slice(0);
       copiedState.push(action.payload);
-      debugger
+      return copiedState;
+    }
+    case APPEND_MESSAGE: {
+      const copiedState = state.slice(0);
+      copiedState.push(action.payload);
       return copiedState;
     }
     default:

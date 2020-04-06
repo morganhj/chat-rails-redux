@@ -1,5 +1,6 @@
 export const FETCH_MESSAGES = 'FETCH_MESSAGES';
 export const MESSAGE_POSTED = 'MESSAGE_POSTED';
+export const APPEND_MESSAGE = 'APPEND_MESSAGE';
 export const CHANNEL_SELECTED = 'CHANNEL_SELECTED';
 
 export function fetchMessages(channel) {
@@ -40,8 +41,9 @@ export function selectChannel(channel) {
 }
 
 export function appendMessage(message) {
+  debugger
   return {
-    type: 'MESSAGE_POSTED',
+    type: APPEND_MESSAGE,
     payload: message
   }
 }
